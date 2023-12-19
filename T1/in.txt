@@ -1,4 +1,6 @@
 #define 12srghzGSA 4w6 ay5\\4\\
 #define abC4 alphas
+#define a af
+#define abC4 digits
 dr hy 12srghzGSA ze5uzxfgj
-abC4abC4 abC4 abC4
+abC4abC4 abC4 abC4 a a
