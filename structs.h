@@ -655,10 +655,25 @@ void remove_map_##k_type##v_type(struct map_##k_type##v_type* map, ks_type key, 
     int hash = hash_##k_type(key);\
     struct node_ml_##k_type##v_type* it = find_node_map_##k_type##v_type(map, key, hash);\
     \
-    if (it != NULL)                           \
-    {                                         \
+    if (it != NULL && it->next != NULL)                           \
+    {                                                                                   \
+        size_t ind = hash % map->buckets.size + 1;                                          \
+        int need_decrease = 0;                                                                                \
+                                                                                        \
+        while (ind < map->buckets.size && map->buckets.data[ind] == it->next)           \
+        {                                                                               \
+            need_decrease = 1;\
+            map->buckets.data[ind] = it;                                                \
+            ++ind;\
+        }\
+                                                                                        \
+        --map->size;                                                                    \
+        if (need_decrease)                                                              \
+            --map->bucket_count;\
         deleter(&it->next->data.pair);\
-        remove_list_ml_##k_type##v_type(it);          \
+        remove_list_ml_##k_type##v_type(it);                                            \
+        if (need_rehash_map_##k_type##v_type(map))\
+            rehash_map_##k_type##v_type(map, deleter);\
     }\
 }\
 \

@@ -47,11 +47,12 @@ struct String init_string_from_stream(FILE* stream, int (*is_needed_sym)(int))
         res.capacity = 0;
         return res;
     }
+    res.data[0] = '\0';
 
     char c;
 
     fscanf(stream, "%c", &c);
-    while (!is_needed_sym(c) && c != EOF && c != '\0')
+    while (!is_needed_sym(c) && c != EOF && c != '\0' && !feof(stream))
         fscanf(stream, "%c", &c);
 
     while (is_needed_sym(c) && !feof(stream))
@@ -82,6 +83,7 @@ struct String init_string_from_stream_buf(FILE* stream, char* buf, int (*is_need
         res.capacity = 0;
         return res;
     }
+    res.data[0] = '\0';
 
     char c;
 
@@ -119,6 +121,7 @@ struct String init_string_from_stream_no_skip(FILE* stream, int (*is_needed_sym)
         res.capacity = 0;
         return res;
     }
+    res.data[0] = '\0';
 
     char c;
 
