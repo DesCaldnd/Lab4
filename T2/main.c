@@ -72,18 +72,18 @@ int work(FILE* in)
     int status = 0;
     status += regcomp(&regexes[0], "Load [[:upper:]], (../)*([[:alnum:]]+/)*[[:alnum:]]+.txt", REG_EXTENDED);
     status += regcomp(&regexes[1], "Save [[:upper:]], (../)*([[:alnum:]]+/)*[[:alnum:]]+.txt", REG_EXTENDED);
-    status += regcomp(&regexes[2], "Rand [[:upper:]], [1-9][0-9]*, -?[1-9][0-9]*, -?[1-9][0-9]*", REG_EXTENDED);
-    status += regcomp(&regexes[3], "Concat [[:upper:]], [[:upper:]]", 0);
+    status += regcomp(&regexes[2], "Rand [[:upper:]], [0-9]+, -?[1-9][0-9]*, -?[1-9][0-9]*", REG_EXTENDED);
+    status += regcomp(&regexes[3], "Concat [[:upper:]], [[:upper:]]", REG_EXTENDED);
     status += regcomp(&regexes[4], "Free\\([[:upper:]]\\)", REG_EXTENDED);
-    status += regcomp(&regexes[5], "Remove [[:upper:]], [1-9][0-9]*, [1-9][0-9]*", 0);
-    status += regcomp(&regexes[6], "Copy [[:upper:]], [1-9][0-9]*, [1-9][0-9]*, [[:upper:]]", 0);
-    status += regcomp(&regexes[7], "Sort [[:upper:]]-", 0);
+    status += regcomp(&regexes[5], "Remove [[:upper:]], [0-9]+, [1-9][0-9]*", REG_EXTENDED);
+    status += regcomp(&regexes[6], "Copy [[:upper:]], [0-9]+, [1-9][0-9]*, [[:upper:]]", REG_EXTENDED);
+    status += regcomp(&regexes[7], "Sort [[:upper:]]-", REG_EXTENDED);
     status += regcomp(&regexes[8], "Sort [[:upper:]]\\+", REG_EXTENDED);
-    status += regcomp(&regexes[9], "Shuffle [[:upper:]]", 0);
-    status += regcomp(&regexes[10], "Stats [[:upper:]]", 0);
-    status += regcomp(&regexes[11], "Print [[:upper:]], [1-9][0-9]*, [1-9][0-9]*", 0);
-    status += regcomp(&regexes[12], "Print [[:upper:]], [1-9][0-9]*", 0);
-    status += regcomp(&regexes[13], "Print [[:upper:]], all", 0);
+    status += regcomp(&regexes[9], "Shuffle [[:upper:]]", REG_EXTENDED);
+    status += regcomp(&regexes[10], "Stats [[:upper:]]", REG_EXTENDED);
+    status += regcomp(&regexes[11], "Print [[:upper:]], [0-9]+, [1-9][0-9]*", REG_EXTENDED);
+    status += regcomp(&regexes[12], "Print [[:upper:]], [0-9]+", REG_EXTENDED);
+    status += regcomp(&regexes[13], "Print [[:upper:]], all", REG_EXTENDED);
     if (status != 0)
     {
         for (int i = 0; i < 14; ++i)
@@ -692,6 +692,11 @@ int stats(struct String str, regex_t* reg, struct map_cvi* map)
             {
                 cur_val = vec.data[i];
                 cur_count = 1;
+				if (cur_count >= max_count)
+				{
+					max_count = cur_count;
+					max_val = cur_val;
+				}
             } else
             {
                 ++cur_count;
@@ -702,6 +707,7 @@ int stats(struct String str, regex_t* reg, struct map_cvi* map)
                 }
             }
         }
+
         destroy_vector_i(&vec);
 
         double average = ((double) sum) / (double) pair->second.size;
@@ -726,7 +732,7 @@ int stats(struct String str, regex_t* reg, struct map_cvi* map)
             }
         }
 
-        printf("Size: %zu\nMax element: %d, index: %zu\nMin element: %d, index: %zu\nMost frequent: %d\nAverage: %lf\nFarest: %d\n", pair->second.size, max_el, max_ind, min_el, min_ind, max_val, average, far);
+        printf("Size: %zu\nMax element: %d, index: %zu\nMin element: %d, index: %zu\nMost frequent: %d\nAverage: %lf\nFarest: %lf\n", pair->second.size, max_el, max_ind, min_el, min_ind, max_val, average, fabs(average - far));
     }
     return 1;
 }

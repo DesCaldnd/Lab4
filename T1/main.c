@@ -25,6 +25,12 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+	if (strcmp(argv[1], argv[2]) == 0)
+	{
+		printf("Files must be different\n");
+		return 0;
+	}
+
     FILE* in = fopen(argv[1], "r+");
 
     if (in == NULL)
@@ -53,6 +59,15 @@ int main(int argc, char* argv[])
     fclose(out);
 
     return 0;
+}
+
+int work_str(struct String str, FILE* out, struct map_ss* defines)
+{
+	struct pair_ss* data = find_map_ss(defines, str);
+	if (data == NULL)
+		fprintf(out, "%s", str.data);
+	else
+		fprintf(out, "%s", data->second.data);
 }
 
 int work(FILE* in, FILE* out)
@@ -125,7 +140,7 @@ int work(FILE* in, FILE* out)
         }
     }
 
-    fprintf(out, "%s", str.data);
+	work_str(str, out, &defines);
     fseek(in, -1, SEEK_CUR);
 
     char c = getc(in);
@@ -155,11 +170,7 @@ int work(FILE* in, FILE* out)
                 return 0;
             }
 
-            struct pair_ss* data = find_map_ss(&defines, str);
-            if (data == NULL)
-                fprintf(out, "%s", str.data);
-            else
-                fprintf(out, "%s", data->second.data);
+			work_str(str, out, &defines);
 
             if (!feof(in))
                 fseek(in, -1, SEEK_CUR);
