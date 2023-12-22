@@ -6,7 +6,7 @@
 
 void push_all_by_priority(struct stack** top, struct vector* expression, int cur_priority) {
     while (!stack_is_empty(*top) && vector_is_valid(*expression) &&
-           stack_top(*top).priority >= cur_priority) {
+           stack_top(*top).priority >= cur_priority && (stack_top(*top).priority != 4 || cur_priority != 4)) {
         vector_push_back(expression, stack_top(*top));
         stack_pop(top);
     }
@@ -16,7 +16,6 @@ int push_all(struct stack** top, struct vector* expression) {
     while (!stack_is_empty(*top) && vector_is_valid(*expression)) {
         if (stack_top(*top).type == OPEN_B)
         {
-            vector_destroy(expression);
             return 0;
         }
         vector_push_back(expression, stack_top(*top));
@@ -152,49 +151,49 @@ char* get_lexem(char* str, struct expr_item* answer, int* has_left_operand) {
     answer->value = 0;
     if (strncmp("sin", str, 3) == 0 && !*has_left_operand) {
         answer->type = SIN;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_sin;
         *has_left_operand = 0;
         str += 3;
     } else if (strncmp("cos", str, 3) == 0 && !*has_left_operand) {
         answer->type = COS;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_cos;
         *has_left_operand = 0;
         str += 3;
     } else if (strncmp("tan", str, 3) == 0 && !*has_left_operand) {
         answer->type = TAN;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_tan;
         *has_left_operand = 0;
         str += 3;
     } else if (strncmp("ctg", str, 3) == 0 && !*has_left_operand) {
         answer->type = CTG;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_ctg;
         *has_left_operand = 0;
         str += 3;
     } else if (strncmp("sqrt", str, 4) == 0 && !*has_left_operand) {
         answer->type = SQRT;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_sqrt;
         *has_left_operand = 0;
         str += 4;
     } else if (strncmp("ln", str, 2) == 0 && !*has_left_operand) {
         answer->type = LN;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_ln;
         *has_left_operand = 0;
         str += 2;
     } else if (strncmp("abs", str, 3) == 0 && !*has_left_operand){
         answer->type = ABS;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_abs;
         *has_left_operand = 0;
         str += 3;
     } else if (strncmp("-", str, 1) == 0 && !*has_left_operand) {
         answer->type = UN_MINUS;
-        answer->priority = 3;
+        answer->priority = 4;
         answer->calculate = &calc_un_minus;
         *has_left_operand = 0;
         str += 1;
@@ -249,7 +248,7 @@ char* get_lexem(char* str, struct expr_item* answer, int* has_left_operand) {
         double val = strtod(str, &end);
         if (str != end && !*has_left_operand) {
             answer->type = CONSTANT;
-            answer->priority = 4;
+            answer->priority = 5;
             answer->calculate = &calc_const;
             answer->value = val;
             *has_left_operand = 1;
