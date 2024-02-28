@@ -685,6 +685,68 @@ void set_max_load_factor(struct map_##k_type##v_type* map, double factor, void (
     \
     if (need_rehash_map_##k_type##v_type(map))\
         rehash_map_##k_type##v_type(map, deleter);\
-}\
+}                                                                                       \
+
+//=====================================================================================================
+
+
+#define STATUS_OK 1
+#define COMMON_ERR 0
+
+struct bnode_double
+{
+    double data;
+    struct bnode_double* p, *n;
+};
+
+struct blist_double
+{
+    struct bnode_double start, end;
+};
+
+struct blist_double init_blist_double();
+
+int insert_blist_double(struct bnode_double*, double data);
+
+void remove_blist_double(struct bnode_double*); // удаляется именно эта нода
+
+
+void destroy_blist_double(struct blist_double* list);
+
+int is_empty_blist_double(const struct blist_double* list);
+
+//-----------------------------------------------------------------------------------------------------
+
+VECTOR(double, double) // макросы с типами, не относящимися к конкретной реализации (например нода) пользователь вызывает сам
+
+struct bheap_queue_double
+{
+    //компаратор задаем сами в конструкторе
+    int (*cmp)(const double, const double);
+    void (*deleter)(double, void*);
+    struct vector_double data;
+};
+
+struct bheap_queue_double init_bheap_queue_double(int (*cmp)(const double, const double), void (*deleter)(double, void*));
+
+void destroy_bheap_queue_double(struct bheap_queue_double* queue);
+
+int insert_bheap_queue_double(struct bheap_queue_double* queue, double data); //возвращает STATUS_OK если все хорошо и COMMON_ERROR в случае ошибки
+//после ошибки структура удаляется
+
+size_t size_bheap_queue(const struct bheap_queue_double* queue);
+
+double top_bheap_queue_double(const struct bheap_queue_double* queue);
+
+void pop_bheap_queue_double(struct bheap_queue_double* queue);
+
+int is_empty_bheap_queue_double(struct bheap_queue_double*);
+
+int is_valid_bheap_queue_double(struct bheap_queue_double*);
+
+int merge_bheap_queue_double(struct bheap_queue_double* lhs, struct bheap_queue_double* rhs); //записывает в левую, правая теперь не валидна
+
+struct bheap_queue_double merge_copy_bheap_queue_double(const struct bheap_queue_double* lhs, const struct bheap_queue_double* rhs);
+
 
 #endif //LAB3_STRUCTS_H
